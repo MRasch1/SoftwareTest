@@ -62,12 +62,36 @@
         // Ensure the user has gone through the username & password screen first
         user = await SignInManager.GetTwoFactorAuthenticationUserAsync() ??
             throw new InvalidOperationException("Unable to load two-factor authentication user.");
+
+        // var token = await UserManager.GenerateTwoFactorTokenAsync{
+        //     user,
+        //     TokenOptions.DefaultEmailProvider
+        // };
+        // SendTokenByEmail(token);
+    }
+
+    private void SendTokenByEmail(string token)
+    {
+        string s = token;
+
     }
 
     private async Task OnValidSubmitAsync()
     {
         var authenticatorCode = Input.TwoFactorCode!.Replace(" ", string.Empty).Replace("-", string.Empty);
-        var result = await SignInManager.TwoFactorAuthenticatorSignInAsync(authenticatorCode, RememberMe, Input.RememberMachine);
+
+        var result = await SignInManager.TwoFactorAuthenticatorSignInAsync(authenticatorCode,
+            RememberMe,
+            Input.RememberMachine
+        );
+
+        // var result = await SignInManager.TwoFactorAuthenticatorSignInAsync(authenticatorCode,
+        //     TokenOptions.DefaultEmailProvider,
+        //     authenticatorCode,
+        //     RememberMe,
+        //     Input.RememberMachine
+        // );
+
         var userId = await UserManager.GetUserIdAsync(user);
 
         if (result.Succeeded)

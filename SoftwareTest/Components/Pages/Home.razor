@@ -1,5 +1,11 @@
 ﻿@page "/"
 
+@using Microsoft.AspNetCore.Identity;
+
+@inject AuthenticationStateProvider _authenticationStateProvider
+@inject IServiceProvider _iServiceProvider;
+@inject UserManager<Data.ApplicationUser> _userManager
+
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, world!</h1>
@@ -7,11 +13,61 @@
 Welcome to your new app.
 
 
-<AuthorizeView>
+@* <AuthorizeView>
     <Authorized>
         <div>Du er logget ind</div>
     </Authorized>
     <NotAuthorized>
         <div>Du er IKKE logget ind</div>
     </NotAuthorized>
-</AuthorizeView>
+</AuthorizeView> *@
+
+@if (_isAuthenticated)
+{
+    <div>Du er logget ind (from code)</div>
+    @if (_isAdmin)
+    {
+        <div>Du er Admin</div>
+    }
+}
+else
+{
+    <div>Du er IKKE logget ind (from code)</div>
+    @if(_isAdmin)
+    {
+        <div>Du er IKKE Admin</div>
+    }
+}
+
+@code{
+    private bool _isAuthenticated;
+    private bool _isAdmin;
+
+    protected override async Task OnInitializedAsync()
+    {
+        /* Kør Linjen nedenfor en gang med breakpoint for at lave en Admin*/
+        // await CreateUserRoleAsync("Admin", "auadmin@tec.dk");
+
+        var authenState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authenState.User;
+        _isAuthenticated = user.Identity.IsAuthenticated;
+        _isAdmin = user.IsInRole("Admin");
+    }
+
+    private async Task CreateUserRoleAsync(string role, string user)
+    {
+        var roleManager = _iServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        var userManager = _userManager;
+
+        var userRoleCheck = await roleManager.RoleExistsAsync(role);
+        if(!userRoleCheck)
+        {
+            IdentityRole myRole = new IdentityRole(role);
+            await roleManager.CreateAsync(myRole);
+        }
+
+        var identityUser = await userManager.FindByEmailAsync(user);
+        await userManager.AddToRoleAsync(identityUser, role);
+    }
+
+}
