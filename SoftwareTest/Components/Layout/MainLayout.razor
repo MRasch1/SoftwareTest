@@ -1,5 +1,8 @@
 ﻿@inherits LayoutComponentBase
 
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
 <div class="page">
     <div class="sidebar">
         <NavMenu />
@@ -9,6 +12,13 @@
         <div class="top-row px-4">
             <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
         </div>
+
+        @if (_isAdmin)
+        {
+            <NavLink href="/addrole" class="nav-link" Match="NavLinkMatch.Prefix">
+                Add Role
+            </NavLink>
+        }
 
         <article class="content px-4">
             @Body
@@ -21,3 +31,17 @@
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
+
+@code{
+
+    private bool _isAdmin;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        // Check if the user is in the "Admin" role
+        _isAdmin = user.IsInRole("Admin");
+    }
+
+}

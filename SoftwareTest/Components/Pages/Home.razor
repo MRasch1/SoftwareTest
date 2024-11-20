@@ -4,13 +4,9 @@
 
 @inject AuthenticationStateProvider _authenticationStateProvider
 @inject IServiceProvider _iServiceProvider;
-@inject UserManager<Data.ApplicationUser> _userManager
+@* @inject UserManager<Data.ApplicationUser> _userManager *@
 
 <PageTitle>Home</PageTitle>
-
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
 
 
 @* <AuthorizeView>
@@ -40,13 +36,13 @@ else
 }
 
 @code{
-    private bool _isAuthenticated;
-    private bool _isAdmin;
+    public bool _isAuthenticated;
+    public bool _isAdmin;
 
     protected override async Task OnInitializedAsync()
     {
         /* Kør Linjen nedenfor en gang med breakpoint for at lave en Admin*/
-        // await CreateUserRoleAsync("Admin", "auadmin@tec.dk");
+        // await CreateUserRoleAsync("Admin", "mr2@tec.dk");
 
         var authenState = await _authenticationStateProvider.GetAuthenticationStateAsync();
         var user = authenState.User;
@@ -54,20 +50,20 @@ else
         _isAdmin = user.IsInRole("Admin");
     }
 
-    private async Task CreateUserRoleAsync(string role, string user)
-    {
-        var roleManager = _iServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-        var userManager = _userManager;
+    // private async Task CreateUserRoleAsync(string role, string user)
+    // {
+    //     var roleManager = _iServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    //     var userManager = _userManager;
 
-        var userRoleCheck = await roleManager.RoleExistsAsync(role);
-        if(!userRoleCheck)
-        {
-            IdentityRole myRole = new IdentityRole(role);
-            await roleManager.CreateAsync(myRole);
-        }
+    //     var userRoleCheck = await roleManager.RoleExistsAsync(role);
+    //     if(!userRoleCheck)
+    //     {
+    //         IdentityRole myRole = new IdentityRole(role);
+    //         await roleManager.CreateAsync(myRole);
+    //     }
 
-        var identityUser = await userManager.FindByEmailAsync(user);
-        await userManager.AddToRoleAsync(identityUser, role);
-    }
+    //     var identityUser = await userManager.FindByEmailAsync(user);
+    //     await userManager.AddToRoleAsync(identityUser, role);
+    // }
 
 }
