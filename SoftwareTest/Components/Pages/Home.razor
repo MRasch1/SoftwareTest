@@ -4,6 +4,7 @@
 
 @inject AuthenticationStateProvider _authenticationStateProvider
 @inject IServiceProvider _iServiceProvider;
+
 @* @inject UserManager<Data.ApplicationUser> _userManager *@
 
 <PageTitle>Home</PageTitle>
@@ -49,6 +50,7 @@ else
         _isAuthenticated = user.Identity.IsAuthenticated;
         _isAdmin = user.IsInRole("Admin");
     }
+
 
     // private async Task CreateUserRoleAsync(string role, string user)
     // {
